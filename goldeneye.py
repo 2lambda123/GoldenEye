@@ -127,6 +127,16 @@ class GoldenEye(object):
     method = METHOD_GET
 
     def __init__(self, url):
+        """Initializes the Manager and Counters for the provided URL.
+        Parameters:
+            - url (str): The URL to be initialized.
+        Returns:
+            - None: This function does not return anything.
+        Processing Logic:
+            - Set URL
+            - Initialize Manager
+            - Initialize Counters"""
+        
 
         # Set URL
         self.url = url
@@ -139,13 +149,44 @@ class GoldenEye(object):
 
 
     def exit(self):
+        """Shuts down the GoldenEye system and prints a message to confirm the shutdown.
+        Parameters:
+            - self (object): The GoldenEye system object.
+        Returns:
+            - None: Does not return any value.
+        Processing Logic:
+            - Calls the stats() method.
+            - Prints a shutdown message."""
+        
         self.stats()
         print("Shutting down GoldenEye")
 
     def __del__(self):
+        """Function: __del__
+        Deletes an instance of the class.
+        Parameters:
+            - self (object): The instance of the class to be deleted.
+        Returns:
+            - None: This function does not return anything.
+        Processing Logic:
+            - Calls the exit() method.
+            - Deletes the instance.
+            - Automatically called when the instance is destroyed."""
+        
         self.exit()
 
     def printHeader(self):
+        """Prints a banner to the console.
+        Parameters:
+            - self (object): The object that calls the function.
+        Returns:
+            - None: Does not return any value.
+        Processing Logic:
+            - Prints a banner to the console.
+            - Uses the GOLDENEYE_BANNER variable.
+            - No parameters are required.
+            - Does not return any value."""
+        
 
         # Taunt!
         print()
@@ -154,6 +195,19 @@ class GoldenEye(object):
 
     # Do the fun!
     def fire(self):
+        """Fires multiple workers to hit a webserver with a specified number of connections each.
+        Parameters:
+            - self (object): The object itself.
+            - param1 (string): The method used to hit the webserver.
+            - param2 (int): The number of workers to start.
+        Returns:
+            - None: Does not return anything.
+        Processing Logic:
+            - Print the header.
+            - Print the webserver information.
+            - Start the specified number of workers.
+            - Start the monitor."""
+        
 
         self.printHeader()
         print("Hitting webserver in mode '{0}' with {1} workers running {2} connections each. Hit CTRL+C to cancel.".format(self.method, self.nr_workers, self.nr_sockets))
@@ -181,6 +235,16 @@ class GoldenEye(object):
         self.monitor()
 
     def stats(self):
+        """Function: stats(self)
+        Parameters:
+            - self (object): The object containing the counters and last counters.
+        Returns:
+            - None: This function does not return any value.
+        Processing Logic:
+            - Prints the number of successful and failed GoldenEye strikes.
+            - Checks if the server may be down based on the counters.
+            - Updates the last counters with the current counters."""
+        
 
         try:
             if self.counter[0] > 0 or self.counter[1] > 0:
@@ -196,6 +260,8 @@ class GoldenEye(object):
             pass # silently ignore
 
     def monitor(self):
+        """"""
+        
         while len(self.workersQueue) > 0:
             try:
                 for worker in self.workersQueue:
@@ -250,6 +316,8 @@ class Striker(Process):
     method = METHOD_GET
 
     def __init__(self, url, nr_sockets, counter):
+        """"""
+        
 
         super(Striker, self).__init__()
 
@@ -280,11 +348,15 @@ class Striker(Process):
 
 
     def __del__(self):
+        """"""
+        
         self.stop()
 
 
     #builds random ascii string
     def buildblock(self, size):
+        """"""
+        
         out_str = ''
 
         _LOWERCASE = list(range(97, 122))
@@ -301,6 +373,8 @@ class Striker(Process):
 
 
     def run(self):
+        """"""
+        
 
         if DEBUG:
             print("Starting worker {0}".format(self.name))
@@ -347,6 +421,8 @@ class Striker(Process):
             print("Worker {0} completed run. Sleeping...".format(self.name))
 
     def closeConnections(self):
+        """"""
+        
         for conn in self.socks:
             try:
                 conn.close()
@@ -355,6 +431,8 @@ class Striker(Process):
 
 
     def createPayload(self):
+        """"""
+        
 
         req_url, headers = self.generateData()
 
@@ -368,6 +446,8 @@ class Striker(Process):
         return (req_url, random_headers)
 
     def generateQueryString(self, ammount = 1):
+        """"""
+        
 
         queryString = []
 
@@ -382,6 +462,8 @@ class Striker(Process):
 
 
     def generateData(self):
+        """"""
+        
 
         returnCode = 0
         param_joiner = "?"
@@ -400,10 +482,14 @@ class Striker(Process):
         return (request_url, http_headers)
 
     def generateRequestUrl(self, param_joiner = '?'):
+        """"""
+        
 
         return self.url + param_joiner + self.generateQueryString(secrets.SystemRandom().randint(1,5))
 
     def getUserAgent(self):
+        """"""
+        
 
         if self.useragents:
             return secrets.SystemRandom().choice(self.useragents)
@@ -454,6 +540,8 @@ class Striker(Process):
         return ua_string
 
     def generateRandomHeaders(self):
+        """"""
+        
 
         # Random no-cache entries
         noCacheDirectives = ['no-cache', 'max-age=0']
@@ -509,12 +597,16 @@ class Striker(Process):
 
     # Housekeeping
     def stop(self):
+        """"""
+        
         self.runnable = False
         self.closeConnections()
         self.terminate()
 
     # Counter Functions
     def incCounter(self):
+        """"""
+        
         try:
             self.counter[0] += 1
         except Exception:

